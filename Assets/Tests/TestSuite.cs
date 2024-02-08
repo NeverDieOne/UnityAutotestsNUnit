@@ -57,4 +57,21 @@ public class TestSuite {
         int endCount = Managers.Inventory.GetItemCount("key");
         Assert.AreNotEqual(startCount, endCount);
     }
+
+    [UnityTest]
+    public IEnumerator PlayerCanOpenDoor() {
+        yield return Utils.WaitForLevelLoad(levelName);
+        Player _player = getPlayer();
+        CollectableItem _key = MonoBehaviour.FindFirstObjectByType<CollectableItem>();
+        DoorTrigger _door = MonoBehaviour.FindAnyObjectByType<DoorTrigger>();
+
+        _player.transform.position = _key.transform.position;
+        yield return new WaitForSeconds(1);
+
+        _player.transform.position = _door.transform.position;
+        yield return new WaitForSeconds(1);
+
+        DoorTrigger newDoor = MonoBehaviour.FindAnyObjectByType<DoorTrigger>();
+        Assert.IsNull(newDoor);
+    }
 }
