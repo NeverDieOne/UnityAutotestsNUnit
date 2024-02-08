@@ -9,6 +9,9 @@ using Tests.Utils;
 public class TestSuite {
     readonly private string levelName = "Game";
 
+    private Player getPlayer() {
+        return MonoBehaviour.FindAnyObjectByType<Player>();
+    }
 
     [SetUp]
     public void Setup() {
@@ -18,8 +21,8 @@ public class TestSuite {
     [UnityTest]
     public IEnumerator PlayerCanMove() {
         yield return Utils.WaitForLevelLoad(levelName);
-        Player _player = MonoBehaviour.FindObjectOfType<Player>();
-
+        Player _player = getPlayer();
+    
         float startPos = _player.transform.position.x;
         _player.Move(.05f);
         yield return new WaitForSeconds(2);
@@ -30,7 +33,7 @@ public class TestSuite {
     [UnityTest]
     public IEnumerator PlayerCanJump() {
         yield return Utils.WaitForLevelLoad(levelName);
-        Player _player = MonoBehaviour.FindObjectOfType<Player>();
+        Player _player = getPlayer();
 
         float startPos = _player.transform.position.y;
         _player.TryJump();
@@ -39,5 +42,19 @@ public class TestSuite {
         Assert.AreNotEqual(startPos, endPos);
     }
 
+    [UnityTest]
+    public IEnumerator PlayerCanTakeKey() {
+        yield return Utils.WaitForLevelLoad(levelName);
+        Player _player = getPlayer();
+        CollectableItem _key = MonoBehaviour.FindFirstObjectByType<CollectableItem>();
 
+        int startCount = Managers.Inventory.GetItemCount("key");
+        Assert.AreEqual(0, startCount);
+
+        _player.transform.position = _key.transform.position;
+        yield return new WaitForSeconds(1);
+
+        int endCount = Managers.Inventory.GetItemCount("key");
+        Assert.AreNotEqual(startCount, endCount);
+    }
 }
